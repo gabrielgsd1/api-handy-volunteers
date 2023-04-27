@@ -5,12 +5,13 @@ import { Op } from 'sequelize';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { JobTypes } from 'src/job-types/job-types.entity';
+import { Ong } from 'src/ong/ong.entity';
 
 @Injectable()
 export class PostsService {
   constructor(@Inject('posts') private postsRepo: typeof Posts) {}
 
-  private includeAllRelations = { include: [Assistants, JobTypes] };
+  private includeAllRelations = { include: [Assistants, JobTypes, Ong] };
 
   async getAllPosts() {
     return await this.postsRepo.findAll(this.includeAllRelations);

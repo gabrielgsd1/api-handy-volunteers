@@ -26,7 +26,7 @@ export class OngService {
   }
 
   async getById(id: number) {
-    return await this.ongRepo.findByPk(id);
+    return await this.ongRepo.findByPk(id, { include: [Posts, OngType] });
   }
 
   async getByOngType(id: number) {
