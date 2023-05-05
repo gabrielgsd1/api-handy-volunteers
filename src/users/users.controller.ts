@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -10,7 +10,14 @@ export class UsersController {
     return await this.usersService.getAll();
   }
 
-  @Get(':/id')
+  @Get('verify-token')
+  async verifyToken(@Req() request: Request) {
+    return await this.usersService.verifyToken(
+      request.headers['authorization'],
+    );
+  }
+
+  @Get(':id')
   async getById(@Param('id') id: string) {
     return await this.usersService.getById(id);
   }

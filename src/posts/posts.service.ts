@@ -2,7 +2,11 @@ import { Inject, Injectable } from '@nestjs/common/decorators';
 import { Posts } from './posts.entity';
 import { CreatePostDto } from './posts.dtos';
 import { Op } from 'sequelize';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { JobTypes } from 'src/job-types/job-types.entity';
 import { Ong } from 'src/ong/ong.entity';
@@ -22,16 +26,20 @@ export class PostsService {
   }
 
   async createPost(dto: CreatePostDto) {
-    return await this.postsRepo.create(
-      {
-        Title: dto.title,
-        Content: dto.content,
-        JobTypeId: dto.jobTypeId,
-        OngId: dto.ongId,
-        CreatedAt: new Date().toISOString(),
-      },
-      this.includeAllRelations,
-    );
+    try {
+      return await this.postsRepo.create(
+        {
+          Title: dto.title,
+          Content: dto.content,
+          JobTypeId: dto.jobTypeId,
+          OngId: dto.ongId,
+          CreatedAt: new Date().toISOString(),
+        },
+        this.includeAllRelations,
+      );
+    } catch (e) {
+      throw new UnprocessableEntityException('Erro ao criar post');
+    }
   }
 
   async assignToAssistant(assistantId: number, postId: string) {

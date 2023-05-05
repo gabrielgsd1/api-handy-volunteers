@@ -9,6 +9,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
+import { Ong } from 'src/ong/ong.entity';
 
 @Table({ tableName: 'Users' })
 export class Users extends Model {
@@ -35,12 +36,17 @@ export class Users extends Model {
   @Column
   RoleId: string;
 
+  @Default(Sequelize.fn('now'))
   @Column({ type: DataType.DATE })
   CreatedAt: Date;
 
+  @Default(Sequelize.fn('now'))
   @Column({ type: DataType.DATE })
   LastUpdatedAt: Date;
 
   @HasOne(() => Assistants)
   Assistant: Assistants;
+
+  @HasOne(() => Ong)
+  Ong: Ong;
 }

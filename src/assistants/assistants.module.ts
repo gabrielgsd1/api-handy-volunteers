@@ -5,8 +5,10 @@ import { Assistants } from './assistants.entity';
 import { Users } from 'src/users/users.entity';
 import { ViacepApi } from 'src/api/viacepApi';
 import { UsersService } from 'src/users/users.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
+  imports: [AuthModule],
   providers: [
     AssistantsService,
     ViacepApi,
