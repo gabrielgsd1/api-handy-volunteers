@@ -10,6 +10,12 @@ import {
 import { Assistants } from 'src/assistants/assistants.entity';
 import { JobTypes } from 'src/job-types/job-types.entity';
 import { Ong } from 'src/ong/ong.entity';
+import { OngType } from 'src/ong-types/ong-types.entity';
+
+export interface SortingBody {
+  sorting: string;
+  ascOrDesc: string;
+}
 
 @Injectable()
 export class PostsService {
@@ -100,6 +106,84 @@ export class PostsService {
         OngId: id,
       },
       ...this.includeAllRelations,
+    });
+  }
+
+  async getPostsByOngType(id: number, sorting: SortingBody) {
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, where: { OngTypeId: id } }],
+      order: [
+        [
+          sorting.sorting ? sorting.sorting : 'CreatedAt',
+          sorting.ascOrDesc ? sorting.ascOrDesc : 'desc',
+        ],
+      ],
+    });
+  }
+
+  async getAvailablePostsByOngType(id: number, sorting: SortingBody) {
+    console.log(sorting);
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, where: { OngTypeId: id } }],
+      order: [
+        [
+          sorting.sorting ? sorting.sorting : 'CreatedAt',
+          sorting.ascOrDesc ? sorting.ascOrDesc : 'desc',
+        ],
+      ],
+      where: {
+        AssistantId: null,
+      },
+    });
+  }
+
+  async getAssistantCurrentJobs(id: number, sorting: SortingBody) {
+    console.log(sorting);
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
+      order: [
+        [
+          sorting.sorting ? sorting.sorting : 'CreatedAt',
+          sorting.ascOrDesc ? sorting.ascOrDesc : 'desc',
+        ],
+      ],
+      where: {
+        AssistantId: id,
+        FinishedAt: { [Op.eq]: null },
+      },
+    });
+  }
+
+  async getAllAssistantJobs(id: number, sorting: SortingBody) {
+    console.log(sorting);
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
+      order: [
+        [
+          sorting.sorting ? sorting.sorting : 'CreatedAt',
+          sorting.ascOrDesc ? sorting.ascOrDesc : 'desc',
+        ],
+      ],
+      where: {
+        AssistantId: id,
+      },
+    });
+  }
+
+  async getAssistantFinishedJobs(id: number, sorting?: SortingBody) {
+    console.log(sorting);
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
+      order: [
+        [
+          sorting.sorting ? sorting.sorting : 'CreatedAt',
+          sorting.ascOrDesc ? sorting.ascOrDesc : 'desc',
+        ],
+      ],
+      where: {
+        AssistantId: id,
+        FinishedAt: { [Op.ne]: null },
+      },
     });
   }
 }

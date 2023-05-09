@@ -5,8 +5,9 @@ import {
   Get,
   Param,
   Post,
+  Query,
 } from '@nestjs/common/decorators';
-import { PostsService } from './posts.service';
+import { PostsService, SortingBody } from './posts.service';
 import { AssignToAssistantDto, CreatePostDto } from './posts.dtos';
 
 @Controller('posts')
@@ -49,6 +50,51 @@ export class PostsController {
   @Get('ong/:id')
   async getPostsByOng(@Param('id') id: number) {
     return await this.postsService.getPostsByOng(id);
+  }
+
+  @Get('ong-type/:id')
+  async getPostsByOngType(
+    @Param('id') id: number,
+    @Query() sorting: SortingBody,
+  ) {
+    console.log(sorting);
+    return await this.postsService.getPostsByOngType(id, sorting);
+  }
+
+  @Get('ong-type/available/:id')
+  async getAvailablePostsByOngType(
+    @Param('id') id: number,
+    @Query() sorting: SortingBody,
+  ) {
+    console.log(sorting);
+    return await this.postsService.getAvailablePostsByOngType(id, sorting);
+  }
+
+  @Get('assistant/current/:id')
+  async getAssistantCurrentJobs(
+    @Param('id') id: number,
+    @Query() sorting: SortingBody,
+  ) {
+    console.log(sorting);
+    return await this.postsService.getAssistantCurrentJobs(id, sorting);
+  }
+
+  @Get('assistant/finished/:id')
+  async getAssistantFinishedJobs(
+    @Param('id') id: number,
+    @Query() sorting: SortingBody,
+  ) {
+    console.log(sorting);
+    return await this.postsService.getAssistantFinishedJobs(id, sorting);
+  }
+
+  @Get('assistant/:id')
+  async getAllAssistantJobs(
+    @Param('id') id: number,
+    @Query() sorting: SortingBody,
+  ) {
+    console.log(sorting);
+    return await this.postsService.getAllAssistantJobs(id, sorting);
   }
 
   @Get(':id')
