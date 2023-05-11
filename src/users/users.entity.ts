@@ -1,7 +1,9 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   Default,
+  ForeignKey,
   HasOne,
   Model,
   Sequelize,
@@ -10,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { Ong } from 'src/ong/ong.entity';
+import { Roles } from 'src/roles/roles.entity';
 
 @Table({ tableName: 'Users' })
 export class Users extends Model {
@@ -33,6 +36,7 @@ export class Users extends Model {
   @Column
   Salt: string;
 
+  @ForeignKey(() => Roles)
   @Column
   RoleId: string;
 
@@ -49,4 +53,7 @@ export class Users extends Model {
 
   @HasOne(() => Ong)
   Ong: Ong;
+
+  @BelongsTo(() => Roles)
+  Role: Roles;
 }

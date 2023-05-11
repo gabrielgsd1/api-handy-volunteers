@@ -8,7 +8,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Assistants } from 'src/assistants/assistants.entity';
-import { JobTypes } from 'src/job-types/job-types.entity';
 import { Ong } from 'src/ong/ong.entity';
 import { OngType } from 'src/ong-types/ong-types.entity';
 
@@ -21,14 +20,16 @@ export interface SortingBody {
 export class PostsService {
   constructor(@Inject('posts') private postsRepo: typeof Posts) {}
 
-  private includeAllRelations = { include: [Assistants, JobTypes, Ong] };
+  private includeAllRelations = {
+    include: [{ model: Assistants }, { model: Ong, include: OngType }],
+  };
 
   async getAllPosts() {
-    return await this.postsRepo.findAll(this.includeAllRelations);
+    return await this.postsRepo.findAll(this.includeAllRelations as any);
   }
 
   async getPostById(id: number) {
-    return await this.postsRepo.findByPk(id, this.includeAllRelations);
+    return await this.postsRepo.findByPk(id, this.includeAllRelations as any);
   }
 
   async createPost(dto: CreatePostDto) {
@@ -37,11 +38,13 @@ export class PostsService {
         {
           Title: dto.title,
           Content: dto.content,
+          FinishDate: dto.finishDate,
+          StartDate: dto.startDate,
           JobTypeId: dto.jobTypeId,
           OngId: dto.ongId,
           CreatedAt: new Date().toISOString(),
         },
-        this.includeAllRelations,
+        this.includeAllRelations as any,
       );
     } catch (e) {
       throw new UnprocessableEntityException('Erro ao criar post');
@@ -65,7 +68,10 @@ export class PostsService {
       },
     );
 
-    return await this.postsRepo.findByPk(postId, this.includeAllRelations);
+    return await this.postsRepo.findByPk(
+      postId,
+      this.includeAllRelations as any,
+    );
   }
 
   async markAsComplete(id: string) {
@@ -78,7 +84,7 @@ export class PostsService {
       },
     );
 
-    return await this.postsRepo.findByPk(id, this.includeAllRelations);
+    return await this.postsRepo.findByPk(id, this.includeAllRelations as any);
   }
 
   async deletePost(postId: string) {
@@ -92,26 +98,26 @@ export class PostsService {
 
   async getAvailableJobs() {
     return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
       where: {
         FinishedAt: { [Op.eq]: null },
         AssistantId: { [Op.eq]: null },
       },
-      ...this.includeAllRelations,
     });
   }
 
   async getPostsByOng(id: number) {
     return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
       where: {
         OngId: id,
       },
-      ...this.includeAllRelations,
     });
   }
 
   async getPostsByOngType(id: number, sorting: SortingBody) {
     return await this.postsRepo.findAll({
-      include: [{ model: Ong, where: { OngTypeId: id } }],
+      include: [{ model: Ong, where: { OngTypeId: id }, include: [OngType] }],
       order: [
         [
           sorting.sorting ? sorting.sorting : 'CreatedAt',
@@ -124,7 +130,7 @@ export class PostsService {
   async getAvailablePostsByOngType(id: number, sorting: SortingBody) {
     console.log(sorting);
     return await this.postsRepo.findAll({
-      include: [{ model: Ong, where: { OngTypeId: id } }],
+      include: [{ model: Ong, where: { OngTypeId: id }, include: [OngType] }],
       order: [
         [
           sorting.sorting ? sorting.sorting : 'CreatedAt',

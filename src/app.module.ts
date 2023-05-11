@@ -4,7 +4,6 @@ import { DatabaseModule } from './database/database.module';
 import { AssistantsModule } from './assistants/assistants.module';
 import { UsersModule } from './users/users.module';
 import { OngModule } from './ong/ong.module';
-import { JobTypesModule } from './job-types/job-types.module';
 import { OngTypesModule } from './ong-types/ong-types.module';
 import { PostsModule } from './posts/posts.module';
 import { ConfigModule } from '@nestjs/config';
@@ -17,7 +16,6 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     DatabaseModule,
     OngModule,
-    JobTypesModule,
     AuthModule,
     OngTypesModule,
     PostsModule,

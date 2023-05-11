@@ -12,6 +12,7 @@ import { Assistants } from 'src/assistants/assistants.entity';
 import { Ong } from 'src/ong/ong.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { OngType } from 'src/ong-types/ong-types.entity';
+import { Roles } from 'src/roles/roles.entity';
 
 @Injectable()
 export class UsersService {
@@ -25,11 +26,15 @@ export class UsersService {
   }
 
   async getById(id: string) {
-    return await this.usersRepo.findByPk(id);
+    return await this.usersRepo.findByPk(id, {
+      include: [Ong, Assistants, Roles],
+    });
   }
 
   async createUser(dto) {
-    return await this.usersRepo.create(dto);
+    return await this.usersRepo.create(dto, {
+      include: [Ong, Assistants, Roles],
+    });
   }
 
   async verifyToken(token: string) {
@@ -43,7 +48,7 @@ export class UsersService {
   async login({ email, password }) {
     const user = await this.usersRepo.findOne({
       where: { Email: email },
-      include: [{ model: Ong, include: [OngType] }, Assistants],
+      include: [{ model: Ong, include: [OngType] }, Assistants, Roles],
     });
     if (!user) throw new NotFoundException(`Usuário ${email} não encontrado`);
     const passwordHashing = await checkPassword(password, user.Salt);

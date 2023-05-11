@@ -1,5 +1,6 @@
 import {
   AutoIncrement,
+  BelongsTo,
   Column,
   DataType,
   HasMany,
@@ -7,18 +8,18 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { Posts } from 'src/posts/posts.entity';
+import { Users } from 'src/users/users.entity';
 
-@Table({ tableName: 'JobTypes' })
-export class JobTypes extends Model {
+@Table({ tableName: 'Roles' })
+export class Roles extends Model<Roles> {
   @AutoIncrement
   @PrimaryKey
   @Column({ type: DataType.INTEGER })
-  JobTypeId: string;
+  RoleId: number;
 
   @Column
   Name: string;
 
-  @HasMany(() => Posts)
-  posts: Posts[];
+  @HasMany(() => Users)
+  users: Users[];
 }

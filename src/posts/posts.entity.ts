@@ -12,7 +12,6 @@ import {
   HasOne,
 } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
-import { JobTypes } from 'src/job-types/job-types.entity';
 import { Ong } from 'src/ong/ong.entity';
 
 @Table({ tableName: 'Posts' })
@@ -36,24 +35,23 @@ export class Posts extends Model {
   @Column
   AssistantId: number;
 
-  @ForeignKey(() => JobTypes)
-  @Column
-  JobTypeId: number;
+  @Column({ type: DataType.DATE })
+  CreatedAt: string;
 
   @Column({ type: DataType.DATE })
-  CreatedAt: Date;
+  FinishedAt: string;
 
   @Column({ type: DataType.DATE })
-  FinishedAt: Date;
+  AssignedAt: string;
 
   @Column({ type: DataType.DATE })
-  AssignedAt: Date;
+  StartDate: string;
+
+  @Column({ type: DataType.DATE })
+  FinishDate: string;
 
   @BelongsTo(() => Assistants, 'AssistantId')
   Assistant: Assistants;
-
-  @BelongsTo(() => JobTypes)
-  JobType: JobTypes;
 
   @BelongsTo(() => Ong)
   Ong: Ong;
