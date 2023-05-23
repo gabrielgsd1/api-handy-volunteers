@@ -84,7 +84,20 @@ export class PostsService {
       },
     );
 
-    return await this.postsRepo.findByPk(id, this.includeAllRelations as any);
+    const notFinishedJobs = await this.postsRepo.findAll({
+      where: {
+        FinishedAt: { [Op.eq]: null },
+        AssistantId: { [Op.ne]: null },
+      },
+    });
+
+    return {
+      notFinishedJobs,
+      finishedJob: await this.postsRepo.findByPk(
+        id,
+        this.includeAllRelations as any,
+      ),
+    };
   }
 
   async deletePost(postId: string) {
@@ -102,6 +115,17 @@ export class PostsService {
       where: {
         FinishedAt: { [Op.eq]: null },
         AssistantId: { [Op.eq]: null },
+      },
+    });
+  }
+
+  async getCurrentPostsByOng(id: number) {
+    return await this.postsRepo.findAll({
+      include: [{ model: Ong, include: [OngType] }],
+      where: {
+        OngId: id,
+        AssistantId: { [Op.ne]: null },
+        FinishedAt: { [Op.eq]: null },
       },
     });
   }

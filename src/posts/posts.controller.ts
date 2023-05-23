@@ -32,11 +32,6 @@ export class PostsController {
     );
   }
 
-  @Get('mark-as-complete/:id')
-  async markAsFinished(@Param('id') id: string) {
-    return await this.postsService.markAsComplete(id);
-  }
-
   @Delete(':id')
   async deletePostById(@Param('id') postId: string) {
     return await this.postsService.deletePost(postId);
@@ -45,6 +40,11 @@ export class PostsController {
   @Get('available-jobs')
   async getAvailableJobs() {
     return await this.postsService.getAvailableJobs();
+  }
+
+  @Get('ong/current/:id')
+  async getCurrentJobsByOng(@Param('id') id: number) {
+    return await this.postsService.getCurrentPostsByOng(id);
   }
 
   @Get('ong/:id')
@@ -95,6 +95,11 @@ export class PostsController {
   ) {
     console.log(sorting);
     return await this.postsService.getAllAssistantJobs(id, sorting);
+  }
+
+  @Get('mark-as-complete/:id')
+  async markAsFinished(@Param('id') id: string) {
+    return await this.postsService.markAsComplete(id);
   }
 
   @Get(':id')
