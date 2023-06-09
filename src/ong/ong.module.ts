@@ -6,9 +6,10 @@ import { UsersService } from 'src/users/users.service';
 import { Users } from 'src/users/users.entity';
 import { ViacepApi } from 'src/api/viacepApi';
 import { AuthModule } from 'src/auth/auth.module';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, RolesModule],
   controllers: [OngController],
   providers: [
     OngService,

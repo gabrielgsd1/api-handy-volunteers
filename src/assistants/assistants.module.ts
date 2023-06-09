@@ -7,16 +7,16 @@ import { ViacepApi } from 'src/api/viacepApi';
 import { UsersService } from 'src/users/users.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { Roles } from 'src/roles/roles.entity';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, RolesModule],
   providers: [
     AssistantsService,
     ViacepApi,
     UsersService,
     { provide: 'assistants', useValue: Assistants },
     { provide: 'users', useValue: Users },
-    { provide: 'roles', useValue: Roles },
   ],
   controllers: [AssistantsController],
 })

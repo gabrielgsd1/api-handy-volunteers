@@ -14,11 +14,13 @@ import { Op } from 'sequelize';
 import { Posts } from 'src/posts/posts.entity';
 import { OngType } from 'src/ong-types/ong-types.entity';
 import { uuid } from 'uuidv4';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class OngService {
   constructor(
     @Inject('ong') private ongRepo: typeof Ong,
+    private rolesService: RolesService,
     private userService: UsersService,
     private viacepApi: ViacepApi,
   ) {}
@@ -55,10 +57,11 @@ export class OngService {
         'E-mail ou CPF/CNPJ já existente na base de dados',
       );
     const { password, salt } = await generatePassword(dto.password);
+    const roleId = await this.rolesService.getOngRoleId();
     const userCreation = {
       User_Id: uuid(),
       Name: dto.name,
-      RoleId: 1,
+      RoleId: roleId,
       Email: dto.email,
       AvatarLink: null,
       Salt: salt,

@@ -7,6 +7,23 @@ import { Ong } from 'src/ong/ong.entity';
 import { Posts } from 'src/posts/posts.entity';
 import { Roles } from 'src/roles/roles.entity';
 import { Users } from 'src/users/users.entity';
+import { isDevEnv } from 'src/utils/functions';
+
+function handleParams() {
+  if (!process.env.PRODUCTION) {
+    return {
+      storage: process.env.DB_STORAGE || './database.db',
+      dialect: (process.env.DB_LOCAL_DIALECT as Dialect) || 'sqlite',
+    };
+  }
+  return {
+    dialect: process.env.DB_PROD_DIALECT as Dialect,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+  };
+}
 
 @Module({
   providers: [
@@ -14,11 +31,7 @@ import { Users } from 'src/users/users.entity';
       provide: 'DATABASE',
       useFactory: async () => {
         const sequelize = new Sequelize({
-          host: process.env.DB_HOST,
-          database: process.env.DB_DATABASE,
-          dialect: process.env.DB_DIALECT as Dialect,
-          username: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
+          ...handleParams(),
           define: {
             timestamps: false,
           },

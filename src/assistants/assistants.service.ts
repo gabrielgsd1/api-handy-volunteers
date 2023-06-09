@@ -11,13 +11,13 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common/exceptions';
 import { uuid } from 'uuidv4';
-import { Roles } from 'src/roles/roles.entity';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AssistantsService {
   constructor(
     @Inject('assistants') private assistantsRepo: typeof Assistants,
-    @Inject('roles') private rolesRepo: typeof Roles,
+    private rolesService: RolesService,
     private userService: UsersService,
     private viacepApi: ViacepApi,
   ) {}
@@ -37,20 +37,17 @@ export class AssistantsService {
         'E-mail ou CPF/CNPJ já existente na base de dados',
       );
 
-    const roles = await this.rolesRepo.findAll();
-    console.log(roles);
     const { password, salt } = await generatePassword(dto.password);
+    const roleId = await this.rolesService.getAssistantRoleId();
     const userCreation = {
       User_Id: uuid(),
       Name: dto.name,
-      RoleId: 2,
+      RoleId: roleId,
       Email: dto.email,
       AvatarLink: null,
       Salt: salt,
       Hash: password,
     };
-
-    console.log(userCreation);
 
     const userCreated = await this.userService.createUser(userCreation);
 

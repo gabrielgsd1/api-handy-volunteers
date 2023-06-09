@@ -14,6 +14,7 @@ import { RolesModule } from './roles/roles.module';
 import { Op } from 'sequelize';
 import { OngType } from './ong-types/ong-types.entity';
 import { Model } from 'sequelize-typescript';
+import * as dotenv from 'dotenv';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ export class AppModule implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
+    dotenv.config();
     await this.ongTypeRepo.findOrCreate(whereFactory('Ambiental'));
     await this.ongTypeRepo.findOrCreate(whereFactory('Assistencia Social'));
     await this.ongTypeRepo.findOrCreate(whereFactory('Educação'));
