@@ -1,6 +1,7 @@
 import {
   BelongsTo,
   Column,
+  CreatedAt,
   DataType,
   Default,
   ForeignKey,
@@ -9,14 +10,15 @@ import {
   Sequelize,
   Table,
   Unique,
+  UpdatedAt,
 } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { Ong } from 'src/ong/ong.entity';
 import { Roles } from 'src/roles/roles.entity';
+import { uuid } from 'uuidv4';
 
-@Table({ tableName: 'Users' })
+@Table({ tableName: 'Users', updatedAt: 'LastUpdatedAt' })
 export class Users extends Model {
-  @Default(Sequelize.fn('gen_random_uuid'))
   @Column({ type: DataType.UUID, primaryKey: true })
   User_Id: string;
 
@@ -37,14 +39,14 @@ export class Users extends Model {
   Salt: string;
 
   @ForeignKey(() => Roles)
-  @Column
-  RoleId: string;
+  @Column({ type: DataType.INTEGER })
+  RoleId: number;
 
-  @Default(Sequelize.fn('now'))
+  @CreatedAt
   @Column({ type: DataType.DATE })
   CreatedAt: Date;
 
-  @Default(Sequelize.fn('now'))
+  @UpdatedAt
   @Column({ type: DataType.DATE })
   LastUpdatedAt: Date;
 

@@ -6,5 +6,6 @@ import { OngType } from './ong-types.entity';
 @Module({
   controllers: [OngTypesController],
   providers: [OngTypesService, { provide: 'ongtypes', useValue: OngType }],
+  exports: [OngTypesService, { provide: 'ongtypes', useValue: OngType }],
 })
 export class OngTypesModule {}

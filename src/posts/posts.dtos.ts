@@ -4,7 +4,6 @@ export interface CreatePostDto {
   ongId: number;
   startDate: string;
   finishDate: string;
-  jobTypeId: number;
 }
 export interface AssignToAssistantDto {
   postId: string;

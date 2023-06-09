@@ -10,6 +10,7 @@ import {
 import { Assistants } from 'src/assistants/assistants.entity';
 import { Ong } from 'src/ong/ong.entity';
 import { OngType } from 'src/ong-types/ong-types.entity';
+import { uuid } from 'uuidv4';
 
 export interface SortingBody {
   sorting: string;
@@ -29,38 +30,55 @@ export class PostsService {
   }
 
   async getPostById(id: number) {
-    return await this.postsRepo.findByPk(id, this.includeAllRelations as any);
+    const post = await this.postsRepo.findByPk(
+      id,
+      this.includeAllRelations as any,
+    );
+    if (!post) throw new NotFoundException('Post não encontrado');
+    return post;
   }
 
   async createPost(dto: CreatePostDto) {
     try {
+      if (!dto.title || dto.title.trim().length === 0)
+        throw new UnprocessableEntityException('Post sem título');
+
+      if (!dto.content || dto.content.trim().length === 0)
+        throw new UnprocessableEntityException('Post sem conteúdo');
+
+      if (!dto.ongId) throw new UnprocessableEntityException('Sem ID de ONG');
+      if (!dto.finishDate || !dto.startDate)
+        throw new UnprocessableEntityException('Sem datas');
       return await this.postsRepo.create(
         {
+          PostId: uuid(),
           Title: dto.title,
           Content: dto.content,
           FinishDate: dto.finishDate,
           StartDate: dto.startDate,
-          JobTypeId: dto.jobTypeId,
           OngId: dto.ongId,
           CreatedAt: new Date().toISOString(),
         },
         this.includeAllRelations as any,
       );
     } catch (e) {
-      throw new UnprocessableEntityException('Erro ao criar post');
+      throw new UnprocessableEntityException(
+        e?.message || 'Erro ao criar post',
+      );
     }
   }
 
   async assignToAssistant(assistantId: number, postId: string) {
-    const count = await this.postsRepo.count({
+    const count = await this.postsRepo.findOne({
       where: {
-        AssistantId: { [Op.eq]: null },
         PostId: postId,
       },
     });
     if (!count) {
-      throw new BadRequestException('Tarefá já possui assistante');
+      throw new NotFoundException('Post inexistente');
     }
+    if (count.AssistantId)
+      throw new BadRequestException('Tarefa já possui assistente');
     await this.postsRepo.update(
       { AssistantId: assistantId, AssignedAt: new Date().toISOString() },
       {
@@ -75,7 +93,9 @@ export class PostsService {
   }
 
   async markAsComplete(id: string) {
-    const post = await this.postsRepo.count({ where: { PostId: id } });
+    const post = await this.postsRepo.count({
+      where: { PostId: id, FinishedAt: { [Op.eq]: null } },
+    });
     if (!post) throw new NotFoundException('Post não encontrado');
     await this.postsRepo.update(
       { FinishedAt: new Date().toISOString() },
@@ -203,7 +223,7 @@ export class PostsService {
   async getAssistantFinishedJobs(id: number, sorting?: SortingBody) {
     console.log(sorting);
     return await this.postsRepo.findAll({
-      include: [{ model: Ong, include: [OngType] }],
+      include: [{ model: Ong, include: [OngType] }, { model: Assistants }],
       order: [
         [
           sorting.sorting ? sorting.sorting : 'CreatedAt',

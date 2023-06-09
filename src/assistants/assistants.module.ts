@@ -6,6 +6,7 @@ import { Users } from 'src/users/users.entity';
 import { ViacepApi } from 'src/api/viacepApi';
 import { UsersService } from 'src/users/users.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { Roles } from 'src/roles/roles.entity';
 
 @Module({
   imports: [AuthModule],
@@ -15,6 +16,7 @@ import { AuthModule } from 'src/auth/auth.module';
     UsersService,
     { provide: 'assistants', useValue: Assistants },
     { provide: 'users', useValue: Users },
+    { provide: 'roles', useValue: Roles },
   ],
   controllers: [AssistantsController],
 })

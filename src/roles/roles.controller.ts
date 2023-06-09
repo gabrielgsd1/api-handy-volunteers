@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { RolesService } from './roles.service';
 
-@Controller('ongtype')
-export class OngTypesController {
+@Controller('roles')
+export class RolesController {
   constructor(private roleService: RolesService) {}
   @Get()
   async getAllOngTypes() {

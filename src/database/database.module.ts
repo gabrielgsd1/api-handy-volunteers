@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common/decorators';
+import { Dialect } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { OngType } from 'src/ong-types/ong-types.entity';
@@ -15,7 +16,7 @@ import { Users } from 'src/users/users.entity';
         const sequelize = new Sequelize({
           host: process.env.DB_HOST,
           database: process.env.DB_DATABASE,
-          dialect: 'postgres',
+          dialect: process.env.DB_DIALECT as Dialect,
           username: process.env.DB_USER,
           password: process.env.DB_PASSWORD,
           define: {

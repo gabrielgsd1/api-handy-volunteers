@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { OngTypesService } from './ong-types.service';
 
 @Controller('ongtype')
@@ -7,5 +7,10 @@ export class OngTypesController {
   @Get()
   async getAllOngTypes() {
     return await this.ongTService.getAllTypes();
+  }
+
+  @Get(':id')
+  async getOngType(@Param('id') id: number) {
+    return await this.ongTService.getTypeById(id);
   }
 }

@@ -22,7 +22,7 @@ export class UsersService {
   ) {}
 
   async getAll() {
-    return await this.usersRepo.findAll();
+    return await this.usersRepo.findAll({ include: [Ong, Assistants, Roles] });
   }
 
   async getById(id: string) {
@@ -32,9 +32,13 @@ export class UsersService {
   }
 
   async createUser(dto) {
-    return await this.usersRepo.create(dto, {
-      include: [Ong, Assistants, Roles],
-    });
+    try {
+      return await this.usersRepo.create(dto, {
+        include: [Ong, Assistants, Roles],
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async verifyToken(token: string) {

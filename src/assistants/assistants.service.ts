@@ -10,11 +10,14 @@ import {
   BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common/exceptions';
+import { uuid } from 'uuidv4';
+import { Roles } from 'src/roles/roles.entity';
 
 @Injectable()
 export class AssistantsService {
   constructor(
     @Inject('assistants') private assistantsRepo: typeof Assistants,
+    @Inject('roles') private rolesRepo: typeof Roles,
     private userService: UsersService,
     private viacepApi: ViacepApi,
   ) {}
@@ -33,16 +36,21 @@ export class AssistantsService {
       throw new UnprocessableEntityException(
         'E-mail ou CPF/CNPJ já existente na base de dados',
       );
+
+    const roles = await this.rolesRepo.findAll();
+    console.log(roles);
     const { password, salt } = await generatePassword(dto.password);
     const userCreation = {
+      User_Id: uuid(),
       Name: dto.name,
       RoleId: 2,
       Email: dto.email,
       AvatarLink: null,
       Salt: salt,
       Hash: password,
-      CreatedAt: new Date().toISOString(),
     };
+
+    console.log(userCreation);
 
     const userCreated = await this.userService.createUser(userCreation);
 
@@ -55,8 +63,18 @@ export class AssistantsService {
       UserId: userCreated.dataValues.User_Id,
     };
 
+    console.log(userCreated);
+
     const assistant = await this.assistantsRepo.create(creation);
 
     return assistant;
+  }
+
+  async getAssistants() {
+    return await this.assistantsRepo.findAll();
+  }
+
+  async getAssistantById(id: number) {
+    return await this.assistantsRepo.findOne({ where: { AssistantId: id } });
   }
 }

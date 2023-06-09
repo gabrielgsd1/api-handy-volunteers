@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Ong } from './ong.entity';
@@ -12,6 +13,7 @@ import { ViacepApi } from 'src/api/viacepApi';
 import { Op } from 'sequelize';
 import { Posts } from 'src/posts/posts.entity';
 import { OngType } from 'src/ong-types/ong-types.entity';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class OngService {
@@ -26,7 +28,9 @@ export class OngService {
   }
 
   async getById(id: number) {
-    return await this.ongRepo.findByPk(id, { include: [Posts, OngType] });
+    const ong = await this.ongRepo.findByPk(id, { include: [Posts, OngType] });
+    if (!ong) throw new NotFoundException('ONG não encontrada');
+    return ong;
   }
 
   async getByOngType(id: number) {
@@ -52,13 +56,13 @@ export class OngService {
       );
     const { password, salt } = await generatePassword(dto.password);
     const userCreation = {
+      User_Id: uuid(),
       Name: dto.name,
       RoleId: 1,
       Email: dto.email,
       AvatarLink: null,
       Salt: salt,
       Hash: password,
-      CreatedAt: new Date().toISOString(),
     };
 
     const userCreated = await this.userService.createUser(userCreation);

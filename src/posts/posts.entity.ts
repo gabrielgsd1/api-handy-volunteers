@@ -13,11 +13,11 @@ import {
 } from 'sequelize-typescript';
 import { Assistants } from 'src/assistants/assistants.entity';
 import { Ong } from 'src/ong/ong.entity';
+import { uuid } from 'uuidv4';
 
 @Table({ tableName: 'Posts' })
 export class Posts extends Model {
   @PrimaryKey
-  @Default(Sequelize.fn('gen_random_uuid'))
   @Column({ type: DataType.UUID })
   PostId: string;
 
