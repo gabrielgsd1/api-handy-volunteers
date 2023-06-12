@@ -16,5 +16,3 @@ export async function generatePassword(pw: string) {
 export async function checkPassword(pw: string, salt: string) {
   return crypto.pbkdf2Sync(pw, salt, 100000, 64, 'sha512').toString('hex');
 }
-
-export const isDevEnv = process.env.DEVELOPMENT;
