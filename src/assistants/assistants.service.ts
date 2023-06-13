@@ -23,13 +23,9 @@ export class AssistantsService {
   ) {}
 
   async createAssistant(dto: CreateAssistantDto) {
-    const cepRequest = await this.viacepApi.getCep(dto.cep);
-    if (cepRequest.error) {
-      throw new BadRequestException(cepRequest.error.message);
-    }
     const userCheck = await this.assistantsRepo.count({
       where: {
-        [Op.or]: [{ Email: dto.cep }, { Cnpj_Cpf: dto.cnpj_cpf }],
+        [Op.or]: [{ Email: dto.email }, { Cnpj_Cpf: dto.cnpj_cpf }],
       },
     });
     if (userCheck)
@@ -56,7 +52,6 @@ export class AssistantsService {
       Email: dto.email,
       Name: userCreated.Name,
       Phone: dto.phone,
-      Cep: dto.cep,
       UserId: userCreated.dataValues.User_Id,
     };
 

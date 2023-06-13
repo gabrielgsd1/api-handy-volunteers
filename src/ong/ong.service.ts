@@ -43,13 +43,9 @@ export class OngService {
   }
 
   async createOng(dto: CreateOngDto) {
-    const cepRequest = await this.viacepApi.getCep(dto.cep);
-    if (cepRequest.error) {
-      throw new BadRequestException(cepRequest.error.message);
-    }
     const userCheck = await this.ongRepo.count({
       where: {
-        [Op.or]: [{ Email: dto.cep }, { Cnpj: dto.cnpj }],
+        [Op.or]: [{ Email: dto.email }, { Cnpj: dto.cnpj }],
       },
     });
     if (userCheck)
@@ -74,7 +70,6 @@ export class OngService {
       OngName: dto.name,
       Cnpj: dto.cnpj,
       Email: dto.email,
-      Cep: cepRequest.data.cep,
       OngTypeId: dto.ongType,
       UserId: userCreated.dataValues.User_Id,
     };
